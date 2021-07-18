@@ -14,12 +14,12 @@ body {
 @keyframes float {
   0%,
   100% {
-    transform: translateY(-10%);
-    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    transform: none;
+    animation-timing-function: ease-in-out;
   }
   50% {
-    transform: none;
-    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    transform: translateY(8%);
+    animation-timing-function: ease-in-out;
   }
 }
 .animate-float {

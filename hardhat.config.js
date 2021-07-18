@@ -7,7 +7,16 @@ module.exports = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
-      chainId: 1337
+      chainId: 1337,
+      // accounts: [{ privateKey, balance: '1000000000000000000' }],
+      // forking: {
+      //   url: 'https://eth-mainnet.alchemyapi.io/v2/atdJm1pAkpGkAQMYkk4yBSjzJ7ziYnl9',
+      //   enabled: true,
+      // }
+    },
+    rinkeby: {
+      url: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+      accounts: [privateKey]
     },
     mainnet: {
       // Infura

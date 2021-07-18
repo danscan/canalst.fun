@@ -9,6 +9,7 @@ import CanalStItem from '../../artifacts/contracts/CanalStItem.sol/CanalStItem.j
 export default function GreetingForm(): ReactElement {
   const { handleSubmit, register } = useForm();
   const onSubmit = useCallback(async ({
+    tip,
     tokenAddress,
     tokenId,
   }) => {
@@ -44,7 +45,7 @@ export default function GreetingForm(): ReactElement {
     const signer = provider.getSigner()
 
     const contract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_ITEM_CONTRACT_ADDRESS, CanalStItem.abi, signer);
-    const pendingTransaction = await contract.makeReplica(tokenAddress, tokenId);
+    const pendingTransaction = await contract.makeReplica(tokenAddress, tokenId, { value: ethers.utils.parseEther(tip) });
     const tx = await pendingTransaction.wait();
     console.log('tx', tx);
 
@@ -61,7 +62,10 @@ export default function GreetingForm(): ReactElement {
         <form className="flex flex-col w-full space-y-8" onSubmit={handleSubmit(onSubmit)}>
           <input {...register('tokenAddress')} className="flex-1 px-4 text-2xl font-bold text-center text-white placeholder-green-200 bg-green-800 border-b border-dashed outline-none font-style-ipm focus:outline-white" placeholder="NFT address" />
           <input {...register('tokenId')} className="flex-1 px-4 text-2xl font-bold text-center text-white placeholder-green-200 bg-green-800 border-b border-dashed outline-none font-style-ipm focus:outline-white" placeholder="NFT token id" />
-          <input {...register('tip', { value: '0.0023' })} className="flex-1 px-4 text-2xl font-bold text-center text-white placeholder-green-200 bg-green-800 border-b border-dashed outline-none font-style-ipm focus:outline-white" placeholder="optional tip in ether" />
+          <div className="w-full space-y-4">
+            <div className="w-full text-lg text-center">Optional donation ($ / ETH)</div>
+            <input {...register('tip', { value: '0.0023' })} className="flex-1 w-full px-4 text-2xl font-bold text-center text-white placeholder-green-200 bg-green-800 border-b border-dashed outline-none font-style-ipm focus:outline-white" placeholder="optional tip in ether" />
+          </div>
           <input className="px-8 py-3 font-bold text-yellow-300 bg-pink-500 shadow-xl rounded-2xl bg-gradient-to-br from-purple-400 to font-style-cn" type="submit" value="Get Replica" />
         </form>
       </div>
