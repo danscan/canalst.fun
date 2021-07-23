@@ -12,10 +12,10 @@ async function main() {
   // If this script is run directly using `node` you may want to call compile 
   // manually to make sure everything is compiled
   // await hre.run('compile');
-  const CanalStItem = await hre.ethers.getContractFactory("CanalStItem");
-  const canalStItem = await CanalStItem.deploy();
-  await canalStItem.deployed();
-  console.log("CanalStItem deployed to:", canalStItem.address);
+  const CanalStFun = await hre.ethers.getContractFactory("CanalStFun");
+  const canalStFun = await CanalStFun.deploy();
+  await canalStFun.deployed();
+  console.log("CanalStFun deployed to:", canalStFun.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
