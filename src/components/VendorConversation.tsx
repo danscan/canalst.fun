@@ -4,6 +4,7 @@ import Typewriter from 'typewriter-effect';
 import vendorMetaverseMan from '../assets/metaverse-man.png';
 import { useBoolean, useCounter, useVibrate } from 'react-use';
 import { Transition } from '@headlessui/react';
+import NFTAddressInput from './NFTInput';
 
 interface VendorConversationProps {
   onConversationComplete: () => void;
@@ -34,7 +35,7 @@ export default function VendorConversation({
           <SpeechMessage
             active={currentMessageIndex === 0}
             keyDelay={1}
-            message="<p>Hey there!</p>"
+            message="<p>Hey there.</p>"
             onFinishedTyping={onMessageFinishedTyping}
             onDisappeared={onMessageDisappeared}
           />
@@ -47,7 +48,7 @@ export default function VendorConversation({
           <SpeechMessage
             active={currentMessageIndex === 4}
             keyDelay={45}
-            message={`<p>We sell ... ahem ... <i>"authentic"<i> NFTs.</p>`}
+            message={`<p>We sell ... ahem ... <i>"authentic"<i> NFTs for cheap.</p>`}
             onFinishedTyping={onMessageFinishedTyping}
             onDisappeared={onMessageDisappeared}
           />
@@ -58,16 +59,18 @@ export default function VendorConversation({
             onFinishedTyping={onMessageFinishedTyping}
             onDisappeared={onMessageDisappeared}
           />
+          {/* Shown While You Speak */}
           <SpeechMessage
-            active={currentMessageIndex >= 8 && currentMessageIndex <= 15}
+            active={currentMessageIndex >= 8 && currentMessageIndex <= 12}
             message="<p>I can check if we have it in stock...</p>"
             pause={100}
             onFinishedTyping={onMessageFinishedTyping}
             onDisappeared={onMessageDisappeared}
           />
+          {/* Shown After You Speak */}
           <SpeechMessage
-            active={currentMessageIndex >= 16}
-            message="<p>Great, then please paste in the NFT URL or token contract address and token ID...</p>"
+            active={currentMessageIndex >= 14}
+            message="<p>Great, then please paste the NFT url or token address...</p>"
             pause={100}
             onFinishedTyping={onMessageFinishedTyping}
             onDisappeared={onMessageDisappeared}
@@ -80,35 +83,44 @@ export default function VendorConversation({
       </Transition>
       {/* Bottom Half */}
       <Transition
-        show={currentMessageIndex >= 9}
+        show={currentMessageIndex >= 9 && currentMessageIndex <= 12 || currentMessageIndex >= 16}
         as="div"
         className="flex items-start p-8 h-1/2"
         enter="transition-opacity ease-in-out duration-500 delay-500"
         enterFrom="opacity-0"
         enterTo="opacity-100"
+        leave="transition-opacity ease-in-out duration-500 delay-500"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
         afterEnter={onMessageFinishedTyping}
       >
-        <div className="w-full max-h-full p-6 pb-4 text-lg italic font-semibold text-white transition-all duration-300 ease-in-out bg-gray-400 bg-opacity-50 border-2 border-green-100 rounded-br-none shadow-xl lg:p-8 lg:text-2xl backdrop-blur bg-blend-multiply rounded-xl font-body">
+        <div className="w-full max-h-full p-6 pb-4 text-lg italic font-semibold text-white transition-all duration-300 ease-in-out bg-gray-400 bg-opacity-50 border-2 border-green-100 rounded-bl-none shadow-xl lg:p-8 lg:text-2xl backdrop-blur bg-blend-multiply rounded-xl font-body">
           <div className="text-sm font-medium tracking-wider text-white uppercase font-style-ipm opacity-70">You:</div>
           <SpeechMessage
             active={currentMessageIndex === 10}
-            message="<p>Funny you should ask...</p>"
+            message="<p>Funny you should ask...... I'm glad I happened by you today.</p>"
             onFinishedTyping={onMessageFinishedTyping}
             onDisappeared={onMessageDisappeared}
           />
           <SpeechMessage
             active={currentMessageIndex === 12}
-            message="<p>Wow... I'm glad I happened by you today.</p>"
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          <SpeechMessage
-            active={currentMessageIndex === 14}
             keyDelay={45}
             message="<p>There actually are some NFTs I've been thinking I'd love to see in my wallet.</p>"
             onFinishedTyping={onMessageFinishedTyping}
             onDisappeared={onMessageDisappeared}
           />
+          {/* NFT Input */}
+          <Transition
+            show={currentMessageIndex >= 16}
+            enter="transition-opacity duration-500 ease-in-out"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity duration-500 ease-in-out"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <NFTAddressInput />
+          </Transition>
         </div>
       </Transition>
     </div>
