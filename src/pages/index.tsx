@@ -31,23 +31,6 @@ export default function Home() {
       >
         <VendorConversation onConversationComplete={vendorConversationOnComplete} />
       </Transition>
-      {/* Enter Store Link */}
-      <Transition
-        as="div"
-        show={conversationComplete}
-        enter="transition-all ease-in-out duration-1000"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="transition-all ease-in-out duration-1000"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <Link href="/replicas">
-          <a className="fixed inset-0 flex items-center justify-center text-xl font-medium text-center text-green-400 bg-black bg-opacity-50 backdrop-blur-lg hover:text-green-100 font-style-ipm" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
-            Click to step inside store...
-          </a>
-        </Link>
-      </Transition>
     </div>
   )
 }
