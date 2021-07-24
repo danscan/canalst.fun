@@ -1,90 +1,60 @@
-import React, { ReactElement, useCallback } from 'react';
+import React, { Children, cloneElement, PropsWithChildren, ReactChildren, ReactElement, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import Typewriter from 'typewriter-effect';
 import vendorMetaverseMan from '../assets/metaverse-man.png';
-import { useBoolean, useCounter, useVibrate } from 'react-use';
+import { useBoolean, useCounter } from 'react-use';
 import { Transition } from '@headlessui/react';
-import NFTAddressInput from './NFTInput';
 
-interface VendorConversationProps {
-  onConversationComplete: () => void;
-}
+type VendorConversationProps = {
+  children: ReactElement[];
+  currentSpokenItem: number;
+};
 
 export default function VendorConversation({
-  onConversationComplete,
+  children,
+  currentSpokenItem,
 }: VendorConversationProps): ReactElement {
-  const [currentMessageIndex, currentMessageIndexActions] = useCounter(0);
-  const onMessageFinishedTyping = useCallback(() => currentMessageIndexActions.inc(), [currentMessageIndexActions]);
-  const onMessageDisappeared = useCallback(() => currentMessageIndexActions.inc(), [currentMessageIndexActions]);
+  const {
+    theVendorSpeaking,
+    theVendorSpokenItems,
+    youSpeaking,
+    youSpokenItems,
+  } = useSpokenItems({
+    children,
+    currentSpokenItem,
+  })
 
   return (
     <div className="fixed inset-0 bg-green-900 bg-opacity-75 backdrop-blur-md backdrop-brightness-200">
       {/* Top Half */}
-      <Transition
-        appear
-        as="div"
-        className="flex items-start p-4 space-x-4 h-1/2"
-        enter="transition-opacity ease-in-out duration-500 delay-100"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-      >
-        {/* Vendor Speech */}
-        <div className="w-full max-h-full p-6 pb-4 text-lg text-white transition-all duration-300 ease-in-out bg-black border-2 border-white rounded-br-none shadow-md lg:p-8 lg:text-2xl backdrop-blur bg-opacity-10 bg-blend-multiply rounded-xl font-style-ipm">
-          <div className="text-sm font-medium tracking-wider text-white uppercase font-style-ipm opacity-70">The Vendor:</div>
-          {/* SpeechMessage currentMessageIndex increments by 2 to account for starting and ending each message's animation */}
-          <SpeechMessage
-            active={currentMessageIndex === 0}
-            keyDelay={1}
-            message="<p>Hey there.</p>"
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          <SpeechMessage
-            active={currentMessageIndex === 2}
-            message="<p>Thanks for stopping by.</p>"
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          <SpeechMessage
-            active={currentMessageIndex === 4}
-            keyDelay={45}
-            message={`<p>We sell ... ahem ... <i>"authentic"<i> NFTs for cheap.</p>`}
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          <SpeechMessage
-            active={currentMessageIndex === 6}
-            message="<p>Let me know if there is any NFT in particular you have your eye on.</p>"
-            pause={100}
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          {/* Shown While You Speak */}
-          <SpeechMessage
-            active={currentMessageIndex >= 8 && currentMessageIndex <= 12}
-            message="<p>I can check if we have it in stock...</p>"
-            pause={100}
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          {/* Shown After You Speak */}
-          <SpeechMessage
-            active={currentMessageIndex >= 14}
-            message="<p>Great, then please paste the NFT url or token address...</p>"
-            pause={100}
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
+      <div className="flex items-start p-4 space-x-4 h-1/2">
+        {/* Vendor Speech Bubble Wrapper */}
+        <div className="flex-1">
+          <Transition
+            appear
+            as="div"
+            show={theVendorSpeaking}
+            enter="transition-opacity ease-in-out duration-500 delay-100"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+          >
+            {/* The Vendor's Speech */}
+            <div className="w-full max-h-full p-6 pb-4 text-lg text-white transition-all duration-300 ease-in-out bg-black border-2 border-white rounded-br-none shadow-md lg:p-8 lg:text-2xl backdrop-blur bg-opacity-10 bg-blend-multiply rounded-xl font-style-ipm">
+              <div className="text-sm font-medium tracking-wider text-white uppercase font-style-ipm opacity-70">The Vendor:</div>
+              {/* The Vendor's Spoken Items */}
+              {theVendorSpokenItems}
+            </div>
+          </Transition>
         </div>
-        {/* Vendor */}
+        {/* The Vendor */}
         <div className="self-end lg:flex-shrink-0 animate-float">
           <Image className="w-full h-full" objectFit="contain" src={vendorMetaverseMan} />
         </div>
-      </Transition>
+      </div>
       {/* Bottom Half */}
       <Transition
-        show={currentMessageIndex >= 9 && currentMessageIndex <= 12 || currentMessageIndex >= 16}
         as="div"
+        show={youSpeaking}
         className="flex items-start p-8 h-1/2"
         enter="transition-opacity ease-in-out duration-500 delay-500"
         enterFrom="opacity-0"
@@ -92,58 +62,94 @@ export default function VendorConversation({
         leave="transition-opacity ease-in-out duration-500 delay-500"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        afterEnter={onMessageFinishedTyping}
       >
         <div className="w-full max-h-full p-6 pb-4 text-lg italic font-semibold text-white transition-all duration-300 ease-in-out bg-gray-400 bg-opacity-50 border-2 border-green-100 rounded-bl-none shadow-xl lg:p-8 lg:text-2xl backdrop-blur bg-blend-multiply rounded-xl font-body">
           <div className="text-sm font-medium tracking-wider text-white uppercase font-style-ipm opacity-70">You:</div>
-          <SpeechMessage
-            active={currentMessageIndex === 10}
-            message="<p>Funny you should ask...... I'm glad I happened by you today.</p>"
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          <SpeechMessage
-            active={currentMessageIndex === 12}
-            keyDelay={45}
-            message="<p>There actually are some NFTs I've been thinking I'd love to see in my wallet.</p>"
-            onFinishedTyping={onMessageFinishedTyping}
-            onDisappeared={onMessageDisappeared}
-          />
-          {/* NFT Input */}
-          <Transition
-            show={currentMessageIndex >= 16}
-            enter="transition-opacity duration-500 ease-in-out"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition-opacity duration-500 ease-in-out"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <NFTAddressInput />
-          </Transition>
+          {/* Your Spoken Items */}
+          {youSpokenItems}
         </div>
       </Transition>
     </div>
   );
 }
 
-interface SpeechMessage {
-  active: boolean;
-  keyDelay?: number;
-  message: string;
-  onDisappeared?: () => void;
-  onFinishedTyping?: () => void;
-  pause?: number;
+/** Hook that maps children to spoken item elements for you and the vendor */
+type UseSpokenItemsProps = {
+  children: ReactElement[];
+  currentSpokenItem: number;
 }
 
-function SpeechMessage({
+type UseSpokenItemsReturnType = {
+  theVendorSpeaking: boolean;
+  theVendorSpokenItems: JSX.Element[];
+  youSpeaking: boolean;
+  youSpokenItems: JSX.Element[];
+}
+
+function useSpokenItems({
+  children,
+  currentSpokenItem,
+}: UseSpokenItemsProps): UseSpokenItemsReturnType {
+  const spokenItemElements = useMemo(() => {
+    return Children
+      .map<ReturnType<typeof VendorConversation.SpokenItem>, ReturnType<typeof VendorConversation.SpokenItem>>(children, (child, index) => {
+        if (![VendorConversation.SpokenItem, VendorConversation.SpokenSpeechMessage].includes(child.type)) {
+          console.warn('Ignoring VendorConversation child of type', child.type);
+          return null;
+        }
+
+        return cloneElement<SpokenItemProps | SpokenSpeechMessageProps>(child, {
+          active: currentSpokenItem === index,
+        });
+      });
+    }, [children, currentSpokenItem]);
+  const theVendorSpokenItems = useMemo(() => spokenItemElements.filter((el) => el.props.speaker === 'TheVendor'), [spokenItemElements]);
+  const youSpokenItems = useMemo(() => spokenItemElements.filter((el) => el.props.speaker === 'You'), [spokenItemElements]);
+
+  const theVendorSpeaking = useMemo(() => !!theVendorSpokenItems.filter((el) => el.props.active).length, [theVendorSpokenItems]);
+  const youSpeaking = useMemo(() => !!youSpokenItems.filter((el) => el.props.active).length, [youSpokenItems]);
+
+  return {
+    theVendorSpeaking,
+    theVendorSpokenItems,
+    youSpeaking,
+    youSpokenItems,
+  };
+}
+
+/** An element to be displayed in a speech bubble when it becomes active */
+type SpokenSpeechMessageProps = SpokenItemProps & Omit<SpeechMessageProps, 'onFinishedTyping'>;
+VendorConversation.SpokenSpeechMessage = function SpokenSpeechMessage({
   active,
-  keyDelay = 40,
+  keyDelay,
   message,
-  onDisappeared,
-  onFinishedTyping = () => {},
-  pause = 400,
-}: SpeechMessage): ReactElement {
+  onFinished,
+  pause,
+  speaker,
+}: SpokenSpeechMessageProps): ReactElement {
+  const [finishedTyping, setFinishedTyping] = useBoolean(false);
+  const onFinishedTyping = useCallback(() => setFinishedTyping(true), [setFinishedTyping]);
+
+  return (
+    <VendorConversation.SpokenItem active={active} onFinished={onFinished} speaker={speaker}>
+      <SpeechMessage
+        keyDelay={keyDelay}
+        message={message}
+        onFinishedTyping={onFinishedTyping}
+        pause={pause}
+      />
+    </VendorConversation.SpokenItem>
+  );
+}
+
+/** An element to be displayed in a speech bubble when it becomes active */
+type SpokenItemProps = PropsWithChildren<{
+  active?: boolean;
+  onFinished?: () => void;
+  speaker: 'TheVendor' | 'You';
+}>;
+
+VendorConversation.SpokenItem = function SpokenItem({ active, children, onFinished }: SpokenItemProps) {
   return (
     <Transition
       show={active}
@@ -153,21 +159,40 @@ function SpeechMessage({
       leave="transition-opacity duration-500 ease-in-out"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
-      afterLeave={onDisappeared}
+      afterLeave={onFinished}
     >
-      <Typewriter
-        options={{ cursor: '' }}
-        onInit={(typewriter) => {
-          typewriter
-            .changeDelay(keyDelay)
-            .typeString(message)
-            .pauseFor(pause)
-            .callFunction(() => {
-              onFinishedTyping();
-            })
-            .start();
-        }}
-      />
+      {children}
     </Transition>
+  );
+}
+
+/** A message to be written out typewriter-style in a SpokenItem */
+interface SpeechMessageProps {
+  keyDelay?: number;
+  message: string;
+  onFinishedTyping: () => void;
+  pause?: number;
+}
+
+function SpeechMessage({
+  keyDelay = 40,
+  message,
+  onFinishedTyping,
+  pause = 400,
+}: SpeechMessageProps): ReactElement {
+  return (
+    <Typewriter
+      options={{ cursor: '' }}
+      onInit={(typewriter) => {
+        typewriter
+          .changeDelay(keyDelay)
+          .typeString(message)
+          .pauseFor(pause)
+          .callFunction(() => {
+            onFinishedTyping();
+          })
+          .start();
+      }}
+    />
   );
 }
