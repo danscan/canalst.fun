@@ -19,7 +19,7 @@ export function NFTInputUrlOrAddress({
   
   return (
     <input
-      className="w-full p-4 bg-transparent bg-white bg-opacity-25 rounded-lg rounded-bl-none outline-none placeholder-green-50 focus:outline-white place holder-opacity-80"
+      className="w-full p-2 bg-transparent bg-white bg-opacity-25 rounded-lg rounded-bl-none outline-none lg:p-4 placeholder-green-50 focus:outline-white place holder-opacity-80"
       onChange={onChangeInput}
       placeholder="Paste NFT url or token address"
       value={urlOrAddress}

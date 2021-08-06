@@ -4,6 +4,7 @@ import Typewriter from 'typewriter-effect';
 import vendorMetaverseMan from '../assets/metaverse-man.png';
 import { useBoolean, useCounter } from 'react-use';
 import { Transition } from '@headlessui/react';
+import classNames from 'classnames';
 
 type VendorConversationProps = {
   children: ReactElement[];
@@ -27,7 +28,10 @@ export default function VendorConversation({
   return (
     <div className="fixed inset-0 bg-green-900 bg-opacity-75 backdrop-blur-md backdrop-brightness-200">
       {/* Top Half */}
-      <div className="flex items-start p-4 space-x-4 h-1/2">
+      <div className={classNames("flex items-start p-4 space-x-4 transition-all", {
+        'h-1/2 lg:h-1/2': theVendorSpeaking,
+        'h-1/4 lg:h-1/2': youSpeaking,
+      })}>
         {/* Vendor Speech Bubble Wrapper */}
         <div className="flex-1">
           <Transition
@@ -55,7 +59,10 @@ export default function VendorConversation({
       <Transition
         as="div"
         show={youSpeaking}
-        className="relative flex items-start p-8 h-1/2"
+        className={classNames("relative flex items-start p-8 transition-all", {
+          'h-3/4 lg:h-1/2': youSpeaking,
+          'h-1/2 lg:h-1/2': theVendorSpeaking,
+        })}
         enter="transition-opacity ease-in-out duration-500 delay-500"
         enterFrom="opacity-0"
         enterTo="opacity-100"
