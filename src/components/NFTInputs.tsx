@@ -1,7 +1,4 @@
-import { Transition } from '@headlessui/react';
-import Image from 'next/image';
-import React, { PropsWithChildren, ReactElement, useCallback, useEffect, useState } from 'react';
-import { useNft } from 'use-nft';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 type NFTInputUrlOrAddressProps = {
   onChangeValue: (value: { address?: string, tokenId?: string }) => void;
