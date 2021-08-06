@@ -1,31 +1,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./SafeAddress.sol";
 
-contract CanalStFun is ERC721, ERC721URIStorage, Pausable, Ownable {
+contract CanalStFun is ERC721URIStorage, Pausable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
-    // The minimum value accepted in makeReplica calls
+    /** The minimum value accepted in makeReplica calls */
     uint256 public makeReplicaPrice;
+
+    /** Event emitted when the makeReplicaPrice changes */
+    event MakeReplicaPriceChanged(uint256 newMakeReplicaPrice);
+    /** Event emitted someone makes a replica */
+    event ReplicaCreated(
+        address recipient,
+        address originalTokenAddress,
+        uint256 originalTokenId,
+        uint256 replicaTokenId,
+        string comment
+    );
 
     constructor() ERC721("CanalStFun", "CSF1") {
         // Initialize makeReplicaPrice to 0
         // Can be overridden by owner
         makeReplicaPrice = 0;
-    }
-
-    /** Owner-Only Mint */
-    function safeMint(address to) public onlyOwner {
-        _safeMint(to, _tokenIdCounter.current());
-        _tokenIdCounter.increment();
     }
 
     /** Owner-Only Pause/Unpause */
@@ -40,40 +43,26 @@ contract CanalStFun is ERC721, ERC721URIStorage, Pausable, Ownable {
     /** Owner-Only Set makeReplica Price */
     function setMakeReplicaPrice(uint256 newMakeReplicaPrice) public onlyOwner {
         makeReplicaPrice = newMakeReplicaPrice;
-    }
-
-    /** Hook: Called before token transfer */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override whenNotPaused {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    /** Holders can burn their tokens */
-    function _burn(uint256 tokenId)
-        internal
-        override(ERC721, ERC721URIStorage)
-    {
-        super._burn(tokenId);
+        emit MakeReplicaPriceChanged(newMakeReplicaPrice);
     }
 
     /** ERC721 tokenURI view */
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721, ERC721URIStorage)
+        override(ERC721URIStorage)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
     }
 
-    /** CSF1: Make a replica of an original token */
+    /** CSF1: Make a replica of an original ERC721 token */
     function makeReplica(
         address originalTokenAddress,
         uint256 originalTokenId,
-        string memory replicaTokenURI
+        string memory replicaTokenURI,
+        address feeSplitRecipient,
+        string calldata optionalComment
     ) public payable returns (uint256) {
         require(
             msg.value >= makeReplicaPrice,
@@ -93,28 +82,39 @@ contract CanalStFun is ERC721, ERC721URIStorage, Pausable, Ownable {
         _safeMint(msg.sender, replicaTokenId);
         _setTokenURI(replicaTokenId, replicaTokenURI);
 
-        // Get the address of the original token's owner
-        address originalTokenOwner = IERC721(originalTokenAddress).ownerOf(
-            originalTokenId
-        );
+        // If the feeSplitRecipient address is empty address(0), set it to the token owner address (if there is one)
+        if (feeSplitRecipient == address(0)) {
+            feeSplitRecipient = IERC721(originalTokenAddress).ownerOf(
+                originalTokenId
+            );
+        }
 
-        // If the original token owner is not a contract, send them half of msg.value
+        // If the feeSplitRecipient address is not a contract, send it half of msg.value
         // Else: Send the contract owner the full msg.value
         if (
-            !SafeAddress.isContract(originalTokenOwner) &&
-            originalTokenOwner != address(0)
+            !SafeAddress.isContract(feeSplitRecipient) &&
+            feeSplitRecipient != address(0)
         ) {
             uint256 originalTokenOwnerPayment = msg.value / 2;
             uint256 ownerPayment = msg.value - originalTokenOwnerPayment;
 
             SafeAddress.sendValue(payable(owner()), ownerPayment);
             SafeAddress.sendValue(
-                payable(originalTokenOwner),
+                payable(feeSplitRecipient),
                 originalTokenOwnerPayment
             );
         } else {
             SafeAddress.sendValue(payable(owner()), msg.value);
         }
+
+        // Emit ReplicaCreated event
+        emit ReplicaCreated(
+            msg.sender,
+            originalTokenAddress,
+            originalTokenId,
+            replicaTokenId,
+            optionalComment
+        );
 
         return replicaTokenId;
     }
