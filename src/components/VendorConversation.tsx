@@ -47,7 +47,7 @@ export default function VendorConversation({
           </Transition>
         </div>
         {/* The Vendor */}
-        <div className="self-end lg:flex-shrink-0 animate-float">
+        <div className="self-end flex-shrink lg:flex-shrink-0 animate-float">
           <Image className="w-full h-full" objectFit="contain" src={vendorMetaverseMan} />
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function VendorConversation({
       <Transition
         as="div"
         show={youSpeaking}
-        className="flex items-start p-8 h-1/2"
+        className="relative flex items-start p-8 h-1/2"
         enter="transition-opacity ease-in-out duration-500 delay-500"
         enterFrom="opacity-0"
         enterTo="opacity-100"
@@ -156,9 +156,6 @@ VendorConversation.SpokenItem = function SpokenItem({ active, children, onFinish
       enter="transition-opacity duration-500 ease-in-out"
       enterFrom="opacity-0"
       enterTo="opacity-100"
-      leave="transition-opacity duration-500 ease-in-out"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
       afterLeave={onFinished}
     >
       {children}

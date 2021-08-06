@@ -10,6 +10,9 @@ body {
 .animate-pulse {
   animation: pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+.animate-pulse-slow {
+  animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
 @keyframes float {
   0%,
