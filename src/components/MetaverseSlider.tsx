@@ -12,6 +12,7 @@ import slide4 from '../assets/metaverse-slides/4.jpg';
 import slide5 from '../assets/metaverse-slides/5.jpg';
 import slide6 from '../assets/metaverse-slides/6.jpg';
 import slide7 from '../assets/metaverse-slides/7.jpg';
+import ProgressBar from './ProgressBar';
 
 
 interface MetaverseSliderProps {
@@ -125,8 +126,8 @@ export default function MetaverseSlider({
         leaveTo="opacity-0"
       >
         <div style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
-          {currentSlide === 0 && 'Click to advance towards The Vendor...'}
-          {currentSlide >= 1 && currentSlide < 5 && 'Keep advancing...'}
+          {currentSlide === 0 && 'Click to find The Vendor...'}
+          {currentSlide >= 1 && currentSlide < 5 && 'Keep clicking...'}
           {currentSlide === 5 && 'Almost there...'}
           {currentSlide === 6 && 'One more...'}
         </div>
@@ -224,29 +225,5 @@ function SlideImage({
     >
       <Image priority className="w-full h-full" layout="fill" objectFit="cover" src={src} onLoadingComplete={onLoad} />
     </Transition>
-  );
-}
-
-interface ProgressBarProps {
-  className: string;
-  classNameValueIncomplete: string;
-  classNameValueComplete: string;
-  /** number between 0 and 1 */
-  progress: number;
-}
-
-function ProgressBar({
-  className,
-  classNameValueIncomplete,
-  classNameValueComplete,
-  progress,
-}: ProgressBarProps): ReactElement {
-  return (
-    <div className={className}>
-      <div className={classNames("absolute inset-y-0 transition-all duration-700 delay-100 ease-out", {
-        [classNameValueIncomplete]: progress < 1,
-        [classNameValueComplete]: progress === 1,
-      })} style={{ width: `${Math.ceil(100 * progress)}%`}} />
-    </div>
   );
 }
