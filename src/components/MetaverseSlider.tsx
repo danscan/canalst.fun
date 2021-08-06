@@ -173,7 +173,7 @@ export default function MetaverseSlider({
             loading metaverse:
           </p>
           <p className="text-4xl text-center text-green-700 font-style-ipm">
-            canal_st.fun
+            canalst.fun
           </p>
         </div>
       </Transition>
