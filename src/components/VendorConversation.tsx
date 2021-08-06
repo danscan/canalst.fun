@@ -39,7 +39,7 @@ export default function VendorConversation({
             enterTo="opacity-100"
           >
             {/* The Vendor's Speech */}
-            <div className="w-full max-h-full p-6 pb-4 text-lg text-white transition-all duration-300 ease-in-out bg-black border-2 border-white rounded-br-none shadow-md lg:p-8 lg:text-2xl backdrop-blur bg-opacity-10 bg-blend-multiply rounded-xl font-style-ipm">
+            <div className="w-full max-h-full p-6 pb-4 text-lg text-white transition-all duration-300 ease-in-out bg-black border-2 border-white rounded-br-none shadow-md lg:p-8 lg:text-2xl bg-opacity-30 bg-blend-multiply rounded-xl font-style-ipm">
               <div className="text-sm font-medium tracking-wider text-white uppercase font-style-ipm opacity-70">The Vendor:</div>
               {/* The Vendor's Spoken Items */}
               {theVendorSpokenItems}
@@ -63,7 +63,7 @@ export default function VendorConversation({
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="w-full max-h-full p-6 pb-4 text-lg italic font-semibold text-white transition-all duration-300 ease-in-out bg-gray-400 bg-opacity-50 border-2 border-green-100 rounded-bl-none shadow-xl lg:p-8 lg:text-2xl backdrop-blur bg-blend-multiply rounded-xl font-body">
+        <div className="w-full max-h-full p-6 pb-4 text-lg italic font-semibold text-white transition-all duration-300 ease-in-out bg-gray-400 bg-opacity-50 border-2 border-green-100 rounded-bl-none shadow-xl lg:p-8 lg:text-2xl bg-blend-multiply rounded-xl font-body">
           <div className="text-sm font-medium tracking-wider text-white uppercase font-style-ipm opacity-70">You:</div>
           {/* Your Spoken Items */}
           {youSpokenItems}
@@ -175,7 +175,7 @@ interface SpeechMessageProps {
 }
 
 function SpeechMessage({
-  keyDelay = 40,
+  keyDelay = 5,
   message,
   onFinishedTyping,
   pause = 400,
