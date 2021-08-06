@@ -28,7 +28,7 @@ export default function MetaverseSlider({
     if (currentSlide < 7) {
       helpTipShowSet(true);
     }
-  }, 10000);
+  }, 7000);
 
   const onClickSlideButton = useCallback(() => {
     helpTipShowSet(false);
