@@ -124,7 +124,7 @@ export default function Home() {
                 Prev
               </button>
             )}
-            {conversationCurrentSpokenItem >= 8 && (
+            {conversationCurrentSpokenItem > 8 && (
               <button className="px-4 py-2 text-lg bg-gray-600 rounded-lg lg:px-8 lg:py-4 lg:text-4xl lg:rounded-2xl font-style-ipm hover:bg-gray-700 text-green-50" onClick={onClickSwitchNFT}>
                 Switch NFT
               </button>
