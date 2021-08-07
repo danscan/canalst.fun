@@ -1,4 +1,4 @@
-const { expect } = require("chai");
+const { expect, use } = require("chai");
 const { ethers, waffle } = require("hardhat");
 
 describe("CanalStFun.makeReplica", () => {
@@ -41,9 +41,9 @@ describe("CanalStFun.makeReplica", () => {
         // uint256 originalTokenId
         1,
         // string memory replicaTokenURI
-        '',
+        testNftTokenUri,
         // address feeSplitRecipient
-        ethers.utils.getAddress('0x0000000000000000000000000000000000000000'),
+        signerOriginalNFTOwner.address,
         // string calldata optionalComment
         '',
         // overrides, used for setting message value
@@ -69,57 +69,6 @@ describe("CanalStFun.makeReplica", () => {
     expect(replicaTokenOwner).to.eq(signerReplicaMaker.address);
   });
 
-  it("should accept an override replicaTokenURI value", async () => {
-    const overrideReplicaTokenUri = 'https://canalst.fun/test';
-    await canalStFun.connect(signerReplicaMaker).makeReplica(
-      // address originalTokenAddress
-      testNFT.address,
-      // uint256 originalTokenId
-      1,
-      // string memory replicaTokenURI
-      overrideReplicaTokenUri,
-      // address feeSplitRecipient
-      ethers.utils.getAddress('0x0000000000000000000000000000000000000000'),
-      // string calldata optionalComment
-      '',
-      // overrides, used for setting message value
-      { value: ethers.utils.parseEther('1') }
-    );
-
-    const replicaTokenUri = await canalStFun.tokenURI(1);
-    expect(replicaTokenUri).to.eq(overrideReplicaTokenUri);
-  });
-
-  it("should accept an override feeSplitRecipient value", async () => {
-    expect(
-      await canalStFun.connect(signerReplicaMaker).makeReplica(
-        // address originalTokenAddress
-        testNFT.address,
-        // uint256 originalTokenId
-        1,
-        // string memory replicaTokenURI
-        '',
-        // address feeSplitRecipient
-        signerOwner.address,
-        // string calldata optionalComment
-        '',
-        // overrides, used for setting message value
-        { value: ethers.utils.parseEther('1') }
-      ),
-    ).to.changeEtherBalances(
-      [
-        signerOwner,
-        signerOriginalNFTOwner,
-        signerReplicaMaker,
-      ],
-      [
-        ethers.utils.parseEther('1'),
-        ethers.utils.parseEther('0'),
-        ethers.utils.parseEther('-1'),
-      ],
-    ).to.emit(canalStFun, 'ReplicaCreated');
-  });
-
   it("should accept an optional comment which appears in the ReplicaCreatedEvent", async () => {
     const optionalComment = 'Hello';
     expect(
@@ -129,7 +78,7 @@ describe("CanalStFun.makeReplica", () => {
         // uint256 originalTokenId
         1,
         // string memory replicaTokenURI
-        '',
+        testNftTokenUri,
         // address feeSplitRecipient
         signerOwner.address,
         // string calldata optionalComment
@@ -150,21 +99,22 @@ describe("CanalStFun.makeReplica", () => {
       .to.emit(canalStFun, 'MakeReplicaPriceChanged')
       .withArgs(newMakeReplicaPrice);
 
-    expect(
-      await canalStFun.connect(signerReplicaMaker).makeReplica(
-        // address originalTokenAddress
-        testNFT.address,
-        // uint256 originalTokenId
-        1,
-        // string memory replicaTokenURI
-        '',
-        // address feeSplitRecipient
-        ethers.utils.getAddress('0x0000000000000000000000000000000000000000'),
-        // string calldata optionalComment
-        '',
-        // overrides, used for setting message value
-        { value: ethers.utils.parseEther('1') }
-      ),
-    ).to.throw();
+    let error;
+    await canalStFun.connect(signerReplicaMaker).makeReplica(
+      // address originalTokenAddress
+      testNFT.address,
+      // uint256 originalTokenId
+      1,
+      // string memory replicaTokenURI
+      '',
+      // address feeSplitRecipient
+      ethers.utils.getAddress('0x0000000000000000000000000000000000000000'),
+      // string calldata optionalComment
+      '',
+      // overrides, used for setting message value
+      { value: ethers.utils.parseEther('1') }
+    ).catch((e) => { error = e; });
+
+    expect(error.message).to.contain('makeReplicaPrice');
   });
 })
