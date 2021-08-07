@@ -1,19 +1,28 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next'
+import logAxiosError from '../../utils/logAxiosError';
 
-/** API function to HEAD media files, circumventing CORS, and respond with their content-type */
+/** API function to proxy media files, circumventing CORS, and redirect on request errors */
 export default async function getNFTMedia(req: NextApiRequest, res: NextApiResponse<string>) {
-  const uri = decodeURIComponent(req.query.uri as string);
-  const {
-    headers: { 'content-type': contentType },
-    data,
-  } = await axios.get(uri, {
-    responseType: 'stream',
-  });
+  const uri = req.query.uri as string;
 
-  res
-    .status(200)
-    .setHeader('content-type', contentType);
+  try {
+    const {
+      headers: { 'content-type': contentType },
+      data,
+    } = await axios.get(uri, {
+      responseType: 'stream',
+    });
+
+    res
+      .status(200)
+      .setHeader('content-type', contentType);
   
-  data.pipe(res);
+    data.pipe(res);
+  } catch (error) {
+    logAxiosError(error);
+    res
+      .status(301)
+      .redirect(uri);
+  }
 }

@@ -13,6 +13,7 @@ type UseNFTReturnType =
 type UseNFTResultType = {
   description?: string;
   mediaElement: ReactElement;
+  metadataURI: string;
   name?: string;
   ownerAddress: string;
   ownerENSName: string | null;
@@ -27,32 +28,34 @@ export default function useNFT(tokenAddress: string, tokenId: string | number): 
     value: result,
   } = useAsync(async (): Promise<UseNFTResultType> => {
     const {
-      nftMetadata,
+      metadata,
+      metadataURI,
       ownerAddress,
       ownerENSName,
       ownerIsContract,
       provider: resolvedProvider,
     } = await resolveNFT(tokenAddress, tokenId);
 
-    const nftMediaUri = ipfsUrlFromString(nftMetadata.image ?? nftMetadata.imageUrl ?? nftMetadata.image_url ?? nftMetadata.animation_url);
-    const { headers: { 'content-type': nftMediaMime } } = await axios.head(nftMediaUri);
+    const nftMediaUri = ipfsUrlFromString(metadata.image ?? metadata.imageUrl ?? metadata.image_url ?? metadata.animation_url);
+    const { data: nftMediaMime } = await axios.get('/api/getMediaContentType', { params: { uri: nftMediaUri } });
     
     const mediaElement = (() => {
-      if (nftMediaMime.startsWith('image/')) {
-        return <img src={nftMediaUri} className="self-center w-auto h-40 rounded-md lg:h-64 xl:h-96" />;
+      if (nftMediaMime.startsWith('video/')) {
+        return <video src={`/api/getNFTMedia?uri=${encodeURIComponent(nftMediaUri)}`} className="self-center w-40 h-40 rounded-md lg:h-64 xl:h-96 lg:w-64 xl:w-96" autoPlay controls />;
       }
-
+      
       if (nftMediaMime.startsWith('document/')) {
         return <iframe src={nftMediaUri} className="self-center w-auto h-40 rounded-md lg:h-64 xl:h-96" />;
       }
-
-      return <video src={nftMediaUri} className="self-center w-40 h-40 rounded-md lg:h-64 xl:h-96 lg:w-64 xl:w-96" autoPlay controls />;
+      
+      return <img src={`/api/getNFTMedia?uri=${encodeURIComponent(nftMediaUri)}`} className="self-center w-auto h-40 rounded-md lg:h-64 xl:h-96" />;
     })();
 
     return {
-      description: nftMetadata.description,
+      description: metadata.description,
       mediaElement,
-      name: nftMetadata.name,
+      metadataURI,
+      name: metadata.name,
       ownerAddress,
       ownerENSName,
       ownerIsContract,
@@ -79,7 +82,8 @@ type ResolveNFTReturnType = {
   ownerAddress?: string;
   ownerENSName?: string;
   ownerIsContract?: boolean;
-  nftMetadata: {
+  metadataURI: string;
+  metadata: {
     animation_url?: string; // opensea standard
     description?: string; // standard
     image?: string; // standard
@@ -101,10 +105,15 @@ async function resolveNFT(
     erc721URI,
     erc1155URI,
   ] = await Promise.all([
-    nftContract.tokenURI(tokenId).catch((error) => console.warn('tokenURI error', error)),
-    nftContract.uri(tokenId).catch((error) => console.warn('uri error', error)),
+    nftContract.tokenURI(tokenId)
+      .catch((error) => console.warn('tokenURI error', error)),
+    nftContract.uri(tokenId)
+      .catch((error) => console.warn('uri error', error)),
   ]);
+  console.log('erc721URI', erc721URI);
+  console.log('erc1155URI', erc1155URI);
   const metadataURI = erc721URI || erc1155URI;
+  console.log('metadataURI', metadataURI);
 
   if (!metadataURI) {
     if (provider !== providerPolygon) {
@@ -119,26 +128,41 @@ async function resolveNFT(
   let ownerENSName: string | undefined;
   let ownerIsContract: boolean | undefined;
   if (erc721URI) {
-    ownerAddress = await nftContract.ownerOf(tokenId);
+    console.log('getting ownerAddress...');
+    ownerAddress = await nftContract.ownerOf(tokenId)
+      .catch((error) => console.warn('ownerOf error', error)) || undefined;
+    console.log('ownerAddress', ownerAddress);
 
-    // Check whether owner address is a contract
-    const bytecode = await provider.getCode(ownerAddress);
-    ownerIsContract = !['0x', '0x0'].includes(bytecode);
-  
-    // Get owner ENS name
-    ownerENSName = await provider.lookupAddress(ownerAddress);
+    if (ownerAddress) {
+      // Check whether owner address is a contract
+      console.log('checking ownerAddress code...');
+      const bytecode = await provider.getCode(ownerAddress);
+      console.log('bytecode', bytecode);
+      ownerIsContract = !['0x', '0x0'].includes(bytecode);
+      console.log('ownerIsContract', ownerIsContract);
+    
+      // Get owner ENS name (mainnet only)
+      if (provider !== providerPolygon) {
+        console.log('getting owner ENS name...');
+        ownerENSName = await provider.lookupAddress(ownerAddress);
+        console.log('ownerENSName', ownerENSName);
+      }
+    }
   }
 
   // Fetch NFT metadata
+  console.log('fetching metadata from', ipfsUrlFromString(metadataURI));
   const { data } = await axios.get(ipfsUrlFromString(metadataURI));
-  const nftMetadata = data as ResolveNFTReturnType['nftMetadata'];
+  console.log('data', data);
+  const metadata = data as ResolveNFTReturnType['metadata'];
 
   return {
     provider,
     ownerAddress,
     ownerENSName, 
     ownerIsContract,
-    nftMetadata,
+    metadata,
+    metadataURI,
   };
 }
 
