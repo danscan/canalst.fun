@@ -2,12 +2,11 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./SafeAddress.sol";
 
-contract CanalStFun is ERC721URIStorage, Pausable, Ownable {
+contract CanalStFun is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
@@ -31,19 +30,15 @@ contract CanalStFun is ERC721URIStorage, Pausable, Ownable {
         makeReplicaPrice = 0;
     }
 
-    /** Owner-Only Pause/Unpause */
-    function pause() public onlyOwner {
-        _pause();
-    }
-
-    function unpause() public onlyOwner {
-        _unpause();
-    }
-
     /** Owner-Only Set makeReplica Price */
     function setMakeReplicaPrice(uint256 newMakeReplicaPrice) public onlyOwner {
         makeReplicaPrice = newMakeReplicaPrice;
         emit MakeReplicaPriceChanged(newMakeReplicaPrice);
+    }
+
+    /** Owner-Only safety measure to withdraw any stuck funds */
+    function safeWithdraw() public onlyOwner {
+        SafeAddress.sendValue(payable(owner()), address(this).balance);
     }
 
     /** ERC721 tokenURI view */
@@ -69,25 +64,11 @@ contract CanalStFun is ERC721URIStorage, Pausable, Ownable {
             "calls to makeReplica must have a msg.value of at least makeReplicaPrice"
         );
 
-        // If the replicaTokenURI is empty, set it to the original token's URI
-        if (bytes(replicaTokenURI).length == 0) {
-            replicaTokenURI = IERC721Metadata(originalTokenAddress).tokenURI(
-                originalTokenId
-            );
-        }
-
         // Mint the replica token and set its tokenURI
         _tokenIdCounter.increment();
         uint256 replicaTokenId = _tokenIdCounter.current();
         _safeMint(msg.sender, replicaTokenId);
         _setTokenURI(replicaTokenId, replicaTokenURI);
-
-        // If the feeSplitRecipient address is empty address(0), set it to the token owner address (if there is one)
-        if (feeSplitRecipient == address(0)) {
-            feeSplitRecipient = IERC721(originalTokenAddress).ownerOf(
-                originalTokenId
-            );
-        }
 
         // If the feeSplitRecipient address is not a contract, send it half of msg.value
         // Else: Send the contract owner the full msg.value
