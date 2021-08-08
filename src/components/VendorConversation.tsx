@@ -1,10 +1,10 @@
-import React, { Children, cloneElement, PropsWithChildren, ReactChildren, ReactElement, useCallback, useMemo } from 'react';
-import Image from 'next/image';
-import Typewriter from 'typewriter-effect';
-import vendorMetaverseMan from '../assets/metaverse-man.png';
-import { useBoolean, useCounter } from 'react-use';
 import { Transition } from '@headlessui/react';
 import classNames from 'classnames';
+import Image from 'next/image';
+import React, { Children, cloneElement, PropsWithChildren, ReactElement, useCallback, useMemo } from 'react';
+import { useBoolean } from 'react-use';
+import Typewriter from 'typewriter-effect';
+import theVendorImage from '../assets/the-vendor.png';
 
 type VendorConversationProps = {
   children: ReactElement[];
@@ -52,7 +52,7 @@ export default function VendorConversation({
         </div>
         {/* The Vendor */}
         <div className="self-end flex-shrink lg:flex-shrink-0 animate-float">
-          <Image className="w-full h-full" objectFit="contain" src={vendorMetaverseMan} />
+          <Image className="w-full h-full" objectFit="contain" src={theVendorImage} />
         </div>
       </div>
       {/* Bottom Half */}
