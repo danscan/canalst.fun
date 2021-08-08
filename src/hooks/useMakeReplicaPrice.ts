@@ -1,6 +1,6 @@
 import { BigNumber, Contract, ContractFunction, ethers } from 'ethers';
 import { useAsync } from 'react-use';
-import CanalStFun from '../../contracts/artifacts/CanalStFun.json';
+import CanalStFunABI from '../../abis/CanalStFunABI.json';
 import ChainlinkPriceFeedABI from '../abis/ChainlinkPriceFeedABI.json';
 import { providerEthereum, providerPolygon } from '../constants/provider';
 
@@ -17,11 +17,11 @@ export default function useMakeReplicaPrice(resolvedProvider: ethers.providers.B
     let chainNativeTokenPriceContract: ChainlinkPriceFeedContract;
     switch (chainId) {
       case 1:
-        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_ETHEREUM, CanalStFun.abi, providerEthereum) as CanalStFunContract;
+        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_ETHEREUM, CanalStFunABI, providerEthereum) as CanalStFunContract;
         chainNativeTokenPriceContract = new ethers.Contract(process.env.NEXT_PUBLIC_CHAINLINK_PRICE_FEED_ADDRESS_ETH, ChainlinkPriceFeedABI, providerEthereum) as ChainlinkPriceFeedContract;
         break;
       case 137:
-        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_POLYGON, CanalStFun.abi, providerPolygon) as CanalStFunContract;
+        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_POLYGON, CanalStFunABI, providerPolygon) as CanalStFunContract;
         chainNativeTokenPriceContract = new ethers.Contract(process.env.NEXT_PUBLIC_CHAINLINK_PRICE_FEED_ADDRESS_MATIC, ChainlinkPriceFeedABI, providerEthereum) as ChainlinkPriceFeedContract;
         break;
       default:

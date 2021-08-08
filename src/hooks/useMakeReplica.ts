@@ -1,8 +1,8 @@
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import { BigNumber, Contract, ContractFunction, ethers } from 'ethers';
 import { useAsyncFn } from 'react-use';
 import Web3Modal from 'web3modal';
-import CanalStFun from '../../contracts/artifacts/CanalStFun.json';
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import CanalStFunABI from '../abis/CanalStFunABI.json';
 
 type MakeReplicaFn = (
   originalTokenAddress: string,
@@ -46,10 +46,10 @@ export default function useMakeReplica() {
     let canalStFunContract: CanalStFunContract;
     switch (chainId) {
       case 1:
-        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_ETHEREUM, CanalStFun.abi, signer) as CanalStFunContract;
+        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_ETHEREUM, CanalStFunABI, signer) as CanalStFunContract;
         break;
       case 137:
-        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_POLYGON, CanalStFun.abi, signer) as CanalStFunContract;
+        canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_POLYGON, CanalStFunABI, signer) as CanalStFunContract;
         break;
       default:
         throw new Error('Almost there– but you\'re on the wrong network. Please switch to the Ethereum or Polygon network and then try again.');
