@@ -139,12 +139,16 @@ VendorConversationRenderer.SpokenSpeechMessage = function SpokenSpeechMessage({
 
   return (
     <VendorConversationRenderer.SpokenItem active={active} onFinished={onFinished} speaker={speaker}>
-      <SpeechMessage
-        keyDelay={keyDelay}
-        message={message}
-        onFinishedTyping={onFinishedTyping}
-        pause={pause}
-      />
+      {/* Only use typewriter effect on the vendor due to weird performance issues */}
+      {speaker === 'TheVendor'
+        ? (
+          <SpeechMessage
+            keyDelay={keyDelay}
+            message={message}
+            onFinishedTyping={onFinishedTyping}
+            pause={pause}
+          />
+        ) : message}
     </VendorConversationRenderer.SpokenItem>
   );
 }
