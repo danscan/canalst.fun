@@ -2,6 +2,7 @@ import { BigNumber, Contract, ContractFunction, ethers } from 'ethers';
 import { useAsyncFn } from 'react-use';
 import Web3Modal from 'web3modal';
 import CanalStFun from '../../contracts/artifacts/CanalStFun.json';
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
 export default function useMakeReplica() {
   return useAsyncFn(async (
@@ -12,16 +13,21 @@ export default function useMakeReplica() {
     optionalComment: string,
   ) => {
     const web3Modal = new Web3Modal({
-
+      cacheProvider: false,
+      network: 'mainnet',
       theme: 'dark',
+      providerOptions: {
+        walletconnect: {
+          package: WalletConnectProvider,
+          options: { infuraId: process.env.NEXT_PUBLIC_INFURA_ID },
+        },
+      },
     });
+    web3Modal.clearCachedProvider();
     const web3Provider = await web3Modal.connect();
-    console.log('web3Provider', web3Provider);
     const provider = new ethers.providers.Web3Provider(web3Provider);
     const network = await provider.getNetwork();
-    console.log('network', network);
     const { chainId } = network;
-    console.log('chainId', chainId);
     const signer = provider.getSigner();
 
     let canalStFunContract: CanalStFunContract;
