@@ -26,8 +26,11 @@ export default function NFTResult({
       alert('Failed to make a replica of the NFT since it\'s status is '+ nftState.status +'. Try a different NFT or try again.');
     }
   }, [nftAddress, nftTokenId, makeReplica, nftState]);
-  console.log('makeReplicaState', makeReplicaState);
-  console.log('makeReplicaPriceState', makeReplicaPriceState);
+  const ownerBlockScannerURI = nftState.status === 'ready' && (
+    nftState.resolvedProvider === providerEthereum
+      ? `https://etherscan.io/enslookup-search?search=${encodeURIComponent(ownerQuery)}`
+      : `https://polygonscan.com/address/${ownerQuery}`
+  );
 
   return (
     <div className="flex flex-col py-4 space-y-4">
@@ -54,7 +57,7 @@ export default function NFTResult({
           </button>
           {nftState.ownerAddress && !nftState.ownerIsContract && (
             <div className="text-xs lg:text-sm">
-              50% of payment will be sent to the NFT's current owner, <a href={`https://etherscan.io/enslookup-search?search=${encodeURIComponent(ownerQuery)}`} className="underline" target="_blank">{ownerQuery}</a>
+              50% of payment will be sent to the NFT's current owner, <a href={ownerBlockScannerURI} className="underline" target="_blank">{ownerQuery}</a>
             </div>
           )}
         </>
