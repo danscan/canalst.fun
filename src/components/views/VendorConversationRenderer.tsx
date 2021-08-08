@@ -4,14 +4,14 @@ import Image from 'next/image';
 import React, { Children, cloneElement, PropsWithChildren, ReactElement, useCallback, useMemo } from 'react';
 import { useBoolean } from 'react-use';
 import Typewriter from 'typewriter-effect';
-import theVendorImage from '../assets/the-vendor.png';
+import theVendorImage from '../../assets/the-vendor.png';
 
 type VendorConversationProps = {
   children: ReactElement[];
   currentSpokenItem: number;
 };
 
-export default function VendorConversation({
+export default function VendorConversationRenderer({
   children,
   currentSpokenItem,
 }: VendorConversationProps): ReactElement {
@@ -26,7 +26,7 @@ export default function VendorConversation({
   })
 
   return (
-    <div className="fixed inset-0 bg-green-900 bg-opacity-75 backdrop-blur-md backdrop-brightness-200">
+    <div className="flex-1">
       {/* Top Half */}
       <div className={classNames("flex items-start p-4 space-x-4 transition-all", {
         'h-1/2 lg:h-1/2': theVendorSpeaking,
@@ -99,8 +99,8 @@ function useSpokenItems({
 }: UseSpokenItemsProps): UseSpokenItemsReturnType {
   const spokenItemElements = useMemo(() => {
     return Children
-      .map<ReturnType<typeof VendorConversation.SpokenItem>, ReturnType<typeof VendorConversation.SpokenItem>>(children, (child, index) => {
-        if (![VendorConversation.SpokenItem, VendorConversation.SpokenSpeechMessage].includes(child.type)) {
+      .map<ReturnType<typeof VendorConversationRenderer.SpokenItem>, ReturnType<typeof VendorConversationRenderer.SpokenItem>>(children, (child, index) => {
+        if (![VendorConversationRenderer.SpokenItem, VendorConversationRenderer.SpokenSpeechMessage].includes(child.type)) {
           console.warn('Ignoring VendorConversation child of type', child.type);
           return null;
         }
@@ -126,7 +126,7 @@ function useSpokenItems({
 
 /** An element to be displayed in a speech bubble when it becomes active */
 type SpokenSpeechMessageProps = SpokenItemProps & Omit<SpeechMessageProps, 'onFinishedTyping'>;
-VendorConversation.SpokenSpeechMessage = function SpokenSpeechMessage({
+VendorConversationRenderer.SpokenSpeechMessage = function SpokenSpeechMessage({
   active,
   keyDelay,
   message,
@@ -138,14 +138,14 @@ VendorConversation.SpokenSpeechMessage = function SpokenSpeechMessage({
   const onFinishedTyping = useCallback(() => setFinishedTyping(true), [setFinishedTyping]);
 
   return (
-    <VendorConversation.SpokenItem active={active} onFinished={onFinished} speaker={speaker}>
+    <VendorConversationRenderer.SpokenItem active={active} onFinished={onFinished} speaker={speaker}>
       <SpeechMessage
         keyDelay={keyDelay}
         message={message}
         onFinishedTyping={onFinishedTyping}
         pause={pause}
       />
-    </VendorConversation.SpokenItem>
+    </VendorConversationRenderer.SpokenItem>
   );
 }
 
@@ -156,7 +156,7 @@ type SpokenItemProps = PropsWithChildren<{
   speaker: 'TheVendor' | 'You';
 }>;
 
-VendorConversation.SpokenItem = function SpokenItem({ active, children, onFinished }: SpokenItemProps) {
+VendorConversationRenderer.SpokenItem = function SpokenItem({ active, children, onFinished }: SpokenItemProps) {
   return (
     <Transition
       show={active}

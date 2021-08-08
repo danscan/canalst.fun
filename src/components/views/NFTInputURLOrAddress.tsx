@@ -1,12 +1,14 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
-type NFTInputUrlOrAddressProps = {
+type NFTInputURLOrAddressProps = {
+  className: string,
   onChangeValue: (value: { address?: string, tokenId?: string }) => void;
 }
 
-export function NFTInputUrlOrAddress({
-  onChangeValue
-}: NFTInputUrlOrAddressProps): ReactElement {
+export default function NFTInputURLOrAddress({
+  className,
+  onChangeValue,
+}: NFTInputURLOrAddressProps): ReactElement {
   const [urlOrAddress, setUrlOrAddress] = useState('');
   const onChangeInput = useCallback((e) => setUrlOrAddress(e.target.value), [setUrlOrAddress]);
 
@@ -19,7 +21,7 @@ export function NFTInputUrlOrAddress({
   
   return (
     <input
-      className="w-full p-2 bg-transparent bg-white bg-opacity-25 rounded-lg rounded-bl-none outline-none lg:p-4 placeholder-green-50 focus:outline-white place holder-opacity-80"
+      className={className}
       onChange={onChangeInput}
       placeholder="Paste NFT url or token address"
       value={urlOrAddress}
@@ -32,7 +34,7 @@ type UseNFTAddressReturnType = {
   tokenId: string | null;
 };
 
-export function useNFTAddress(inputValue: string): UseNFTAddressReturnType {
+function useNFTAddress(inputValue: string): UseNFTAddressReturnType {
   const [, address] = inputValue?.match(/(0x[a-fA-F0-9]{40})/) ?? [];
   const [,, tokenId] = inputValue?.match(/(0x[a-fA-F0-9]{40})(?:[/|:, ]{1,2}|\?[a-zA-Z0-9]+=)([0-9]{1,77})/) ?? [];
 

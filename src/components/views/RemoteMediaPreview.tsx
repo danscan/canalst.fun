@@ -10,15 +10,15 @@ enum MediaPreviewAttempt {
   LinkOnly = 3,
 };
 
-type NFTMediaPreviewProps = {
+type RemoteMediaPreviewProps = {
   className?: string;
   mediaURI: string;
 };
 
-export default function NFTMediaPreview({
+export default function RemoteMediaPreview({
   className,
   mediaURI,
-}: NFTMediaPreviewProps): ReactElement {
+}: RemoteMediaPreviewProps): ReactElement {
   const mediaContentTypeAsync = useAsync(async () => {
     const { data: contentType } = await axios.get('/api/getMediaContentType', { params: { uri: mediaURI } });
     return contentType;

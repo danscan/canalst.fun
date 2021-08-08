@@ -4,24 +4,24 @@ import Image from 'next/image';
 import React, { ReactElement, useCallback, useEffect } from 'react';
 import { useBoolean, useCounter, useTimeoutFn } from 'react-use';
 // Load metaverse slide images
-import slide0 from '../assets/metaverse-slides/0.jpg';
-import slide1 from '../assets/metaverse-slides/1.jpg';
-import slide2 from '../assets/metaverse-slides/2.jpg';
-import slide3 from '../assets/metaverse-slides/3.jpg';
-import slide4 from '../assets/metaverse-slides/4.jpg';
-import slide5 from '../assets/metaverse-slides/5.jpg';
-import slide6 from '../assets/metaverse-slides/6.jpg';
-import slide7 from '../assets/metaverse-slides/7.jpg';
-import ProgressBar from './ProgressBar';
+import slide0 from '../../assets/metaverse-slides/0.jpg';
+import slide1 from '../../assets/metaverse-slides/1.jpg';
+import slide2 from '../../assets/metaverse-slides/2.jpg';
+import slide3 from '../../assets/metaverse-slides/3.jpg';
+import slide4 from '../../assets/metaverse-slides/4.jpg';
+import slide5 from '../../assets/metaverse-slides/5.jpg';
+import slide6 from '../../assets/metaverse-slides/6.jpg';
+import slide7 from '../../assets/metaverse-slides/7.jpg';
+import ProgressBar from '../views/ProgressBar';
 
 
-interface MetaverseSliderProps {
+interface IntroJourneyToVendorSliderProps {
   onEndReached: () => void;
 }
 
-export default function MetaverseSlider({
+export default function IntroJourneyToVendorSlider({
   onEndReached,
-}: MetaverseSliderProps): ReactElement {
+}: IntroJourneyToVendorSliderProps): ReactElement {
   const [currentSlide, currentSlideCounterActions] = useCounter(0, 7);
 
   const [helpTipShow, helpTipShowSet] = useBoolean(false);
@@ -174,6 +174,9 @@ export default function MetaverseSlider({
           </p>
           <p className="text-4xl text-center text-green-700 font-style-ipm">
             canalst.fun
+          </p>
+          <p className="text-sm text-center text-green-800 font-style-ipm">
+            by <a href="https://dscanlon.com" className="underline">danscan.eth</a>
           </p>
         </div>
       </Transition>
