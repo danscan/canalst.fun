@@ -36,7 +36,7 @@ export default function NFTResult({
   if (makeReplicaState.loading) {
     return (
       <div className="flex flex-col py-4 space-y-4">
-        Please wait here. We're creating your replica now... It should only take a few minutes.
+        Please wait here while we create your replica... It should only take a few minutes.
       </div>
     );
   }
@@ -71,9 +71,8 @@ export default function NFTResult({
         <div>Checking if we can make a replica of that NFT...</div>
       )}
       {makeReplicaState.error && (
-        <div className="space-y-2 border-t border-b border-white">
-          <div className="underline font-body">One small issue:</div>
-          <div className="text-sm">{makeReplicaState.error.message}</div>
+        <div className="py-3 text-sm border-t border-b border-white border-opacity-50">
+          <span className="underline">One small issue: </span>{makeReplicaState.error.message}
         </div>
       )}
       {nftState.status === 'ready' && (
