@@ -45,7 +45,7 @@ export default function CanalStFun(): ReactElement {
           defaultImageHeight: 627,
           defaultImageWidth: 1200,
           images: [
-            { url: 'https://canalst.fun/og-canal-st.jpg', alt: 'Canal Street', height: 627, width: 1200 },
+            { url: 'https://canalst.fun/cover-image.jpg', alt: 'Canal Street', height: 627, width: 1200 },
           ],
           locale: 'en_US',
           url: 'https://canalst.fun',
