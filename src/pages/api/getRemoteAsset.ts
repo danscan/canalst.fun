@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import logAxiosError from '../../utils/logAxiosError';
 
-/** API function to proxy media files, circumventing CORS, and redirect on request errors */
+/** API function to proxy remote assets, circumventing CORS, and redirect on request errors */
 export default async function getNFTMedia(req: NextApiRequest, res: NextApiResponse<string>) {
   const uri = req.query.uri as string;
 
