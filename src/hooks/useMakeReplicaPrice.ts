@@ -12,18 +12,17 @@ export default function useMakeReplicaPrice(resolvedProvider: ethers.providers.B
 
     const network = await resolvedProvider.getNetwork();
     const { chainId } = network;
-    console.log('chainId', chainId);
 
     let canalStFunContract: CanalStFunContract;
     let chainNativeTokenPriceContract: ChainlinkPriceFeedContract;
     switch (chainId) {
       case 1:
         canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_ETHEREUM, CanalStFun.abi, providerEthereum) as CanalStFunContract;
-        chainNativeTokenPriceContract = new ethers.Contract('0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419', ChainlinkPriceFeedABI, providerEthereum) as ChainlinkPriceFeedContract;
+        chainNativeTokenPriceContract = new ethers.Contract(process.env.NEXT_PUBLIC_CHAINLINK_PRICE_FEED_ADDRESS_ETH, ChainlinkPriceFeedABI, providerEthereum) as ChainlinkPriceFeedContract;
         break;
       case 137:
         canalStFunContract = new ethers.Contract(process.env.NEXT_PUBLIC_CANAL_ST_FUN_CONTRACT_ADDRESS_POLYGON, CanalStFun.abi, providerPolygon) as CanalStFunContract;
-        chainNativeTokenPriceContract = new ethers.Contract('0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676', ChainlinkPriceFeedABI, providerEthereum) as ChainlinkPriceFeedContract;
+        chainNativeTokenPriceContract = new ethers.Contract(process.env.NEXT_PUBLIC_CHAINLINK_PRICE_FEED_ADDRESS_MATIC, ChainlinkPriceFeedABI, providerEthereum) as ChainlinkPriceFeedContract;
         break;
       default:
         throw new Error('Wrong network. Please use the Ethereum (1) or Polygon (137) chain.');
@@ -41,7 +40,7 @@ export default function useMakeReplicaPrice(resolvedProvider: ethers.providers.B
 
     const chainNativeTokenPriceUSD = Number(ethers.utils.formatUnits(chainNativeTokenPrice, chainNativeTokenPriceDecimals));
     const canalStPriceNative = Number(ethers.utils.formatEther(canalStFunMakeReplicaPrice));
-    const canalStPriceUSD = chainNativeTokenPriceUSD / canalStPriceNative;
+    const canalStPriceUSD = chainNativeTokenPriceUSD * canalStPriceNative;
 
     return canalStPriceUSD;
   }, [resolvedProvider]);
