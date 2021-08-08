@@ -45,7 +45,7 @@ export default function NFTResult({
     // TODO: Add credits and success state
     return (
       <div className="flex flex-col py-4 space-y-4">
-        <div>Your replica was created successfully.</div>
+        <div>Your replica transaction has been submitted successfully. It will appear in your inventory shortly.</div>
         {nftState.status === 'ready' && (
           <>
             <RemoteMediaPreview
@@ -54,12 +54,12 @@ export default function NFTResult({
             />
             {nftState.resolvedProvider === providerEthereum && (
               <a className="block underline" href={`https://rainbow.me/${makeReplicaState.value.replicaTokenOwner}`}>
-                View it in your inventory. 
+                View your inventory. 
               </a>
             )}
           </>
         )}
-        <div className="text-xs font-body">Thank you for stopping by Canal St (.fun).</div>
+        <div className="text-xs font-body">Thank you for stopping by CanalSt.fun. <i>Let's keep this between us ;)</i></div>
         <Follow username="danscan" options={{ size: 'large' }} />
       </div>
     );
