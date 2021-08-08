@@ -1,5 +1,6 @@
 import { Transition } from '@headlessui/react';
 import classNames from 'classnames';
+import { DefaultSeo } from 'next-seo';
 import Head from 'next/head';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useBoolean, useCounter } from 'react-use';
@@ -33,8 +34,30 @@ export default function CanalStFun(): ReactElement {
 
   return (
     <div>
+      <DefaultSeo
+        canonical='https://canalst.fun'
+        defaultTitle="CanalSt.Fun | The Canal Street of NFTs"
+        description="If the metaverse had a place where you could buy bootleg NFTs, this would be it."
+        openGraph={{
+          type: 'website',
+          title: 'The Canal Street of NFTs',
+          description: 'If the metaverse had a place where you could buy bootleg NFTs, this would be it.',
+          defaultImageHeight: 627,
+          defaultImageWidth: 1200,
+          images: [
+            { url: '/og-canal-st.jpg', alt: 'Canal Street', height: 627, width: 1200 },
+          ],
+          locale: 'en_US',
+          url: 'https://canalst.fun',
+          site_name: 'CanalSt.fun',
+        }}
+        twitter={{
+          handle: '@danscan',
+          site: '@danscan',
+          cardType: 'summary_large_image',
+        }}
+      />
       <Head>
-        <title>CanalSt.Fun | The Canal Street of NFTs</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
       {/* Intro: Journey to Vendor Slider */}
