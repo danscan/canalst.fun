@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { Follow } from 'react-twitter-widgets';
 import { providerEthereum } from "../../constants/provider";
 import useMakeReplica from "../../hooks/useMakeReplica";
 import useMakeReplicaPrice from "../../hooks/useMakeReplicaPrice";
@@ -12,7 +13,7 @@ export default function NFTResult({
   const nftState = useNFT(nftAddress, nftTokenId);
   const ownerQuery = nftState.status === 'ready' && (nftState.ownerENSName || nftState.ownerAddress);
   const makeReplicaPriceState = useMakeReplicaPrice(nftState.status === 'ready' && nftState.resolvedProvider);
-  const [makeReplicaState, makeReplica] = useMakeReplica();
+  const { makeReplicaState, makeReplica } = useMakeReplica();
   const onClickGetReplica = useCallback(() => {
     if (nftState.status === 'ready') {
       makeReplica(
@@ -32,10 +33,48 @@ export default function NFTResult({
       : `https://polygonscan.com/address/${encodeURIComponent(ownerQuery)}`
   );
 
+  if (makeReplicaState.loading) {
+    return (
+      <div className="flex flex-col py-4 space-y-4">
+        Please wait here. We're creating your replica now... It should only take a few minutes.
+      </div>
+    );
+  }
+
+  if (makeReplicaState.value) {
+    // TODO: Add credits and success state
+    return (
+      <div className="flex flex-col py-4 space-y-4">
+        <div>Your replica was created successfully.</div>
+        {nftState.status === 'ready' && (
+          <>
+            <RemoteMediaPreview
+              className="self-center object-contain rounded-md w-28 h-28 md:w-40 md:h-40 lg:h-64 xl:h-96 lg:w-64 xl:w-96"
+              mediaURI={nftState.mediaURI}
+            />
+            {nftState.resolvedProvider === providerEthereum && (
+              <a className="block underline" href={`https://rainbow.me/${makeReplicaState.value.replicaTokenOwner}`}>
+                View it in your inventory. 
+              </a>
+            )}
+          </>
+        )}
+        <div className="text-xs font-body">Thank you for stopping by Canal St (.fun).</div>
+        <Follow username="danscan" options={{ size: 'large' }} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col py-4 space-y-4">
       {nftState.status === 'loading' && (
-        <div>Checking...</div>
+        <div>Checking if we can make a replica of that NFT...</div>
+      )}
+      {makeReplicaState.error && (
+        <div className="space-y-2 border-t border-b border-white">
+          <div className="underline font-body">One small issue:</div>
+          <div className="text-sm">{makeReplicaState.error.message}</div>
+        </div>
       )}
       {nftState.status === 'ready' && (
         <>
