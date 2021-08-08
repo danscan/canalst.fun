@@ -99,12 +99,12 @@ export default function CanalStFun(): ReactElement {
             speaker="TheVendor"
           />
           <VendorConversationRenderer.SpokenSpeechMessage
-            message="<p>Funny you should ask...... I'm glad I happened by you today.</p>"
+            message="Funny you should ask...... I'm glad I happened by you today."
             speaker="You"
           />
           <VendorConversationRenderer.SpokenSpeechMessage
             keyDelay={10}
-            message="<p>There actually are some NFTs I'd love to see in my wallet.</p>"
+            message="There actually are some NFTs I'd love to see in my wallet."
             speaker="You"
           />
           <VendorConversationRenderer.SpokenSpeechMessage
