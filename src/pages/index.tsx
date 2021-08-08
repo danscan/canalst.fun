@@ -65,7 +65,7 @@ export default function CanalStFun(): ReactElement {
       {/* Vendor Conversation */}
       <Transition
         as="div"
-        className="fixed inset-0 flex flex-col items-stretch bg-green-900 bg-opacity-75 backdrop-blur-md backdrop-brightness-200"
+        className="fixed inset-0 flex flex-col items-stretch overflow-hidden bg-green-800 bg-opacity-90"
         show={journeyToVendorComlpete}
         enter="transition-all ease-in-out duration-600"
         enterFrom="opacity-0"
