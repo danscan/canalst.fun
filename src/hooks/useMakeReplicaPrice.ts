@@ -1,6 +1,6 @@
 import { BigNumber, Contract, ContractFunction, ethers } from 'ethers';
 import { useAsync } from 'react-use';
-import CanalStFunABI from '../../abis/CanalStFunABI.json';
+import CanalStFunABI from '../abis/CanalStFunABI.json';
 import ChainlinkPriceFeedABI from '../abis/ChainlinkPriceFeedABI.json';
 import { providerEthereum, providerPolygon } from '../constants/provider';
 
