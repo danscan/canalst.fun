@@ -53,7 +53,7 @@ export default function IntroJourneyToVendorSlider({
   }, [allImagesLoaded, currentSlide, helpTipTimoutReset, helpTipTimoutReset]);
 
   return (
-    <button className="relative block w-screen h-screen bg-black cursor-pointer" onClick={onClickSlideButton}>
+    <button className="relative block w-screen h-screen overflow-hidden bg-black cursor-pointer" onClick={onClickSlideButton}>
       {/* Slides */}
       {/* Slide 7 */}
       <SlideImage
