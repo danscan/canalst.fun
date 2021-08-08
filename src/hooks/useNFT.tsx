@@ -12,7 +12,7 @@ type UseNFTReturnType =
 
 type UseNFTResultType = {
   description?: string;
-  mediaElement: ReactElement;
+  mediaURI: string;
   metadataURI: string;
   name?: string;
   ownerAddress: string;
@@ -36,24 +36,11 @@ export default function useNFT(tokenAddress: string, tokenId: string | number): 
       provider: resolvedProvider,
     } = await resolveNFT(tokenAddress, tokenId);
 
-    const nftMediaUri = ipfsUrlFromString(metadata.image ?? metadata.imageUrl ?? metadata.image_url ?? metadata.animation_url);
-    const { data: nftMediaMime } = await axios.get('/api/getMediaContentType', { params: { uri: nftMediaUri } });
-    
-    const mediaElement = (() => {
-      if (nftMediaMime.startsWith('video/')) {
-        return <video src={`/api/getNFTMedia?uri=${encodeURIComponent(nftMediaUri)}`} className="self-center w-40 h-40 rounded-md lg:h-64 xl:h-96 lg:w-64 xl:w-96" autoPlay controls />;
-      }
-      
-      if (nftMediaMime.startsWith('document/')) {
-        return <iframe src={nftMediaUri} className="self-center w-auto h-40 rounded-md lg:h-64 xl:h-96" />;
-      }
-      
-      return <img src={`/api/getNFTMedia?uri=${encodeURIComponent(nftMediaUri)}`} className="self-center w-auto h-40 rounded-md lg:h-64 xl:h-96" />;
-    })();
+    const mediaURI = ipfsUrlFromString(metadata.image ?? metadata.imageUrl ?? metadata.image_url ?? metadata.animation_url);
 
     return {
       description: metadata.description,
-      mediaElement,
+      mediaURI,
       metadataURI,
       name: metadata.name,
       ownerAddress,
@@ -152,7 +139,7 @@ async function resolveNFT(
 
   // Fetch NFT metadata
   console.log('fetching metadata from', ipfsUrlFromString(metadataURI));
-  const { data } = await axios.get(ipfsUrlFromString(metadataURI));
+  const { data } = await axios.get('/api/getRemoteAsset', { params: { uri: ipfsUrlFromString(metadataURI) } });
   console.log('data', data);
   const metadata = data as ResolveNFTReturnType['metadata'];
 

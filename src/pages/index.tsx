@@ -1,13 +1,17 @@
 import { Transition } from '@headlessui/react';
+import classNames from 'classnames';
 import Head from 'next/head';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useBoolean, useCounter } from 'react-use';
-import useNft from '../hooks/useNFT';
 import MetaverseSlider from '../components/MetaverseSlider';
 import { NFTInputUrlOrAddress } from '../components/NFTInputs';
-import VendorConversation from '../components/VendorConversation';
+import NFTMediaPreview from '../components/NFTMediaPreview';
 import ProgressBar from '../components/ProgressBar';
-import classNames from 'classnames';
+import VendorConversation from '../components/VendorConversation';
+import { providerEthereum } from '../constants/provider';
+import useMakeReplica from '../hooks/useMakeReplica';
+import useMakeReplicaPrice from '../hooks/useMakeReplicaPrice';
+import useNft from '../hooks/useNFT';
 
 export default function Home() {
   const [journeyToVendorComlpete, setJourneyToVendorComplete] = useBoolean(false);
@@ -80,7 +84,7 @@ export default function Home() {
           />
           <VendorConversation.SpokenSpeechMessage
             keyDelay={10}
-            message="<p>There actually are some NFTs I've been thinking I'd love to see in my wallet.</p>"
+            message="<p>There actually are some NFTs I'd love to see in my wallet.</p>"
             speaker="You"
           />
           <VendorConversation.SpokenSpeechMessage
@@ -144,14 +148,24 @@ export default function Home() {
             )}
           </div>
           {/* Conversation Progress Bar */}
-          <ProgressBar
-            className="relative h-4 max-w-3xl mx-auto my-4 border-2 border-green-200 border-opacity-90 rounded-3xl bg-blend-screen mix-blend-screen"
-            classNameValueComplete="bg-white bg-opacity-100 animate-pulse rounded-3xl"
-            classNameValueIncomplete="bg-green-200 bg-opacity-90 rounded-3xl"
-            progress={conversationCurrentSpokenItem / 11}
-          />
+          <Transition
+            as="div"
+            className="transition-all ease-in-out transform duration-400"
+            show={conversationCurrentSpokenItem < 11}
+            enterFrom="translate-y-96 opacity-0"
+            enterTo="translate-y-0 opacity-100"
+            leaveFrom="translate-y-0 opacity-100"
+            leaveTo="translate-y-96 opacity-0"
+          >
+            <ProgressBar
+              className="relative h-4 max-w-3xl mx-auto my-4 border-2 border-green-200 border-opacity-90 rounded-3xl bg-blend-screen mix-blend-screen"
+              classNameValueComplete="bg-white bg-opacity-100 animate-pulse rounded-3xl"
+              classNameValueIncomplete="bg-green-200 bg-opacity-90 rounded-3xl"
+              progress={conversationCurrentSpokenItem / 10}
+            />
+          </Transition>
         </div>
-      </Transition>
+        </Transition>
     </div>
   )
 }
@@ -162,6 +176,23 @@ function NFTResult({
 }) {
   const nftState = useNft(nftAddress, nftTokenId);
   const ownerQuery = nftState.status === 'ready' && (nftState.ownerENSName || nftState.ownerAddress);
+  const makeReplicaPriceState = useMakeReplicaPrice(nftState.status === 'ready' && nftState.resolvedProvider);
+  const [makeReplicaState, makeReplica] = useMakeReplica();
+  const onClickGetReplica = useCallback(() => {
+    if (nftState.status === 'ready') {
+      makeReplica(
+        nftAddress,
+        nftTokenId,
+        nftState.metadataURI,
+        nftState.ownerAddress ?? '0x0000000000000000000000000000000000000000',
+        '',
+      );
+    } else {
+      alert('Failed to make a replica of the NFT since it\'s status is '+ nftState.status +'. Try a different NFT or try again.');
+    }
+  }, [nftAddress, nftTokenId, makeReplica, nftState]);
+  console.log('makeReplicaState', makeReplicaState);
+  console.log('makeReplicaPriceState', makeReplicaPriceState);
 
   return (
     <div className="flex flex-col py-4 space-y-4">
@@ -170,12 +201,21 @@ function NFTResult({
       )}
       {nftState.status === 'ready' && (
         <>
-          {nftState.mediaElement}
+          <NFTMediaPreview
+            className="self-center object-cover rounded-md w-28 h-28 md:w-40 md:h-40 lg:h-64 xl:h-96 lg:w-64 xl:w-96"
+            mediaURI={nftState.mediaURI}
+          />
           <div className="space-y-2">
             <div className="text-2xl">{nftState.name}</div>
+            <div className="text-xs opacity-50">
+              {nftState.resolvedProvider === providerEthereum ? 'Ethereum' : 'Polygon'}
+            </div>
           </div>
-          <button className="px-4 py-2 text-lg font-medium text-white bg-blue-500 rounded-lg shadow-xl lg:px-8 lg:py-4 lg:text-4xl lg:rounded-2xl hover:bg-blue-600 font-body">
-            Get Replica for $20
+          <button
+            className="px-4 py-2 text-lg font-medium text-white bg-blue-500 rounded-lg shadow-xl lg:px-8 lg:py-4 lg:text-4xl lg:rounded-2xl hover:bg-blue-600 font-body"
+            onClick={onClickGetReplica}
+          >
+            Get Replica for ${makeReplicaPriceState.value?.toFixed(2)} + gas
           </button>
           {nftState.ownerAddress && !nftState.ownerIsContract && (
             <div className="text-xs lg:text-sm">
@@ -185,9 +225,11 @@ function NFTResult({
         </>
       )}
       {nftState.status === 'error' && (
-        <div>
-          <div className="text-xl">We couldn't find that NFT.</div>
-          <div>We can replicate any ERC721 or ERC1155 NFT. Try hitting "Switch NFT" below and pasting a url from Rarible, OpenSea, or Etherscan.</div>
+        <div className="space-y-4">
+          <div className="text-lg">Failed to load that NFT.</div>
+          <div className="text-base">We can replicate any ERC721 or ERC1155 NFT. Try hitting "Switch NFT" below and pasting a url from Rarible, OpenSea, or Etherscan.</div>
+          <div className="text-sm">If you pasted a URL to a real NFT, the NFT itself may not be on mainnet or polygon, or may have an incorrect metadata URL. Please try another.</div>
+          <div className="text-xs text-gray-400">{nftState.error.message}</div>
         </div>
       )}
     </div>
