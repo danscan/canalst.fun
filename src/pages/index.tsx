@@ -175,7 +175,7 @@ function VendorConversationControls({
     <div className="flex-shrink-0 p-4">
       <div className="flex justify-center space-x-4">
         {onClickPrev && (
-          <button className="px-4 py-2 text-lg bg-green-800 rounded-lg lg:px-8 lg:py-4 lg:text-4xl lg:rounded-2xl font-style-ipm hover:bg-green-900 text-green-50 opacity-40 hover:opacity-90" onClick={onClickPrev}>
+          <button className="px-4 py-2 text-lg bg-green-900 rounded-lg lg:px-8 lg:py-4 lg:text-4xl lg:rounded-2xl font-style-ipm hover:bg-green-900 text-green-50 opacity-40 hover:opacity-90" onClick={onClickPrev}>
             Prev
           </button>
         )}
@@ -186,7 +186,7 @@ function VendorConversationControls({
         )}
         {onClickNext && (
           <button
-            className={classNames("px-4 py-2 lg:px-8 lg:py-4 text-lg lg:text-4xl bg-green-800 rounded-lg lg:rounded-2xl font-style-ipm hover:bg-green-900 text-green-50 transition-all", {
+            className={classNames("px-4 py-2 lg:px-8 lg:py-4 text-lg lg:text-4xl bg-green-900 rounded-lg lg:rounded-2xl font-style-ipm hover:bg-green-900 text-green-50 transition-all", {
               'animate-bounce': currentItem === 0,
               'animate-pulse-slow': currentItem !== 0,
               'animate-none cursor-not-allowed opacity-50': disableNext,

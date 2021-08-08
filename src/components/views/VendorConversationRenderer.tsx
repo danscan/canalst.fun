@@ -70,7 +70,7 @@ export default function VendorConversationRenderer({
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="w-full max-h-full p-6 pb-4 text-lg italic font-semibold text-white transition-all duration-300 ease-in-out bg-gray-400 bg-opacity-50 border-2 border-green-100 rounded-bl-none shadow-xl lg:p-8 lg:text-2xl bg-blend-multiply rounded-xl font-body">
+        <div className="w-full max-h-full p-6 pb-4 text-lg italic font-semibold text-white transition-all duration-300 ease-in-out bg-gray-400 bg-opacity-50 border-2 border-green-100 rounded-bl-none shadow-xl lg:p-8 lg:text-2xl bg-blend-multiply rounded-xl font-style-ipm">
           <div className="text-sm font-medium tracking-wider text-white uppercase font-style-ipm opacity-70">You:</div>
           {/* Your Spoken Items */}
           {youSpokenItems}
