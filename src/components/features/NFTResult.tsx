@@ -28,8 +28,8 @@ export default function NFTResult({
   }, [nftAddress, nftTokenId, makeReplica, nftState]);
   const ownerBlockScannerURI = nftState.status === 'ready' && (
     nftState.resolvedProvider === providerEthereum
-      ? `https://etherscan.io/enslookup-search?search=${encodeURIComponent(ownerQuery)}`
-      : `https://polygonscan.com/address/${ownerQuery}`
+      ? `https://etherscan.io/address/${encodeURIComponent(ownerQuery)}`
+      : `https://polygonscan.com/address/${encodeURIComponent(ownerQuery)}`
   );
 
   return (
