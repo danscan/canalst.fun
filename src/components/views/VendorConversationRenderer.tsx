@@ -29,7 +29,7 @@ export default function VendorConversationRenderer({
     <div className="flex-1">
       {/* Top Half */}
       <div className={classNames("flex items-start p-4 space-x-4 transition-all", {
-        'h-1/2 lg:h-1/2': theVendorSpeaking,
+        'h-3/4 lg:h-1/2': theVendorSpeaking,
         'h-1/4 lg:h-1/2': youSpeaking,
       })}>
         {/* Vendor Speech Bubble Wrapper */}
@@ -61,7 +61,7 @@ export default function VendorConversationRenderer({
         show={youSpeaking}
         className={classNames("relative flex items-start p-8 transition-all", {
           'h-3/4 lg:h-1/2': youSpeaking,
-          'h-1/2 lg:h-1/2': theVendorSpeaking,
+          'h-1/4 lg:h-1/2': theVendorSpeaking,
         })}
         enter="transition-opacity ease-in-out duration-500 delay-500"
         enterFrom="opacity-0"
